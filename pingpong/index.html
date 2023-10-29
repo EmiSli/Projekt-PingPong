@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="pl">
+    <head>
+        <meta charset="utf-8">
+        <title>PingPong</title>
+        <style>
+            canvas{
+                position: relative;
+                justify-content: center;
+                align-items: center;
+                display: block;
+            }
+            #pingpong{
+                width:100%;
+                height:90vh;
+            }
+            .scoreboard{
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: #f1f1f1;
+            padding: 10px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            }
+            #plansza_canvas {
+            border: 1px solid black;
+            margin-top: 80px;
+            }
+
+        </style>
+    </head>
+    <body>
+        
+        <div id="pingpong">
+        <canvas id="plansza_canvas" style="border: 1px solid black;"></canvas>
+        </div>
+
+
+        <div class="scoreboard">
+            Gracz 1: <span id="punkty_gracz1">0</span> punktów<br>
+            Gracz 2: <span id="punkty_gracz2">0</span> punktów
+        </div>
+        
+        <script>
+
+            
+            var wrapper = document.getElementById('pingpong').getBoundingClientRect();
+
+            plansza = document.getElementById("plansza_canvas");
+            rysowanie = plansza.getContext("2d");
+            plansza_canvas.height=wrapper.height;
+            plansza_canvas.width=wrapper.width;
+            var punktyGracz1 = 0;
+            var punktyGracz2 = 0;
+            var x=plansza.width/2;
+            var y=plansza.height/2;
+            var r=plansza.height/75;
+            var v_y=0;
+            var t=1;
+            var v=plansza.width/200;
+            var v_x=v;
+            var v_p=plansza.height /150;
+            var l=plansza.width/200000;
+            p_y2=plansza.height/2-plansza.height/10;
+
+            p_y=plansza.height/2-plansza.height/10;
+        
+            
+            var player1UpPressed = false;
+            var player1DownPressed = false;
+            var player2UpPressed = false;
+            var player2DownPressed = false;
+
+            document.addEventListener("keydown", function(event) {
+                if (event.key === "ArrowUp") {
+                    player1UpPressed = true;
+                }
+                if (event.key === "ArrowDown") {
+                    player1DownPressed = true;
+                }
+                if (event.code === "KeyW") {
+                    player2UpPressed = true;
+                }
+                if (event.code === "KeyS") {
+                    player2DownPressed = true;
+                }
+                });
+
+            document.addEventListener("keyup", function(event) {
+                if (event.key === "ArrowUp") {
+                    player1UpPressed = false;
+                }
+                if (event.key === "ArrowDown") {
+                    player1DownPressed = false;
+                }
+                if (event.code === "KeyW") {
+                    player2UpPressed = false;
+                }
+                if (event.code === "KeyS") {
+                    player2DownPressed = false;
+                }
+                }); 
+
+            
+            
+            function animacja()
+            {
+                rysowanie.fillStyle="white";
+                rysowanie.fillRect(0,0,plansza.width,plansza.height);
+                rysowanie.fillStyle="green";
+                rysowanie.fillRect(5,10,plansza.width-10,plansza.height-20);
+                rysowanie.fillStyle="white";
+                rysowanie.beginPath();
+                rysowanie.arc(x+v_x,y+v_y,r,0,2*Math.PI);
+                rysowanie.fill();
+                rysowanie.fillStyle="white";
+                rysowanie.fillRect(0,plansza.height/2-plansza.height/500,plansza.width,plansza.height/250);
+
+                rysowanie.fillStyle="red";
+                rysowanie.fillRect(plansza.width-plansza.width/50,p_y,plansza.width/50,plansza.height/5);
+                rysowanie.fillRect(0,p_y2,plansza.width/50,plansza.height/5);
+                if(v<plansza.width/150)
+                {
+                    v=v+l;
+                }
+
+                x=x+v_x;
+                y=y+v_y;
+                if(x<plansza.width/50 && y>p_y2 && y<p_y2+plansza.height/5)
+                {
+                    v_x=v_x*-1;
+                    v_y=(p_y2+plansza.height/10-y)/-40;
+                    v_x=Math.sqrt(v*v-v_y*v_y);
+                }
+                if(x>plansza.width-plansza.width/50 && y>p_y && y<p_y+plansza.height/5)
+                {
+                    v_x=v_x*-1;
+                    v_y=(p_y+plansza.height/10-y)/-40;
+                    v_x=Math.sqrt(v*v-v_y*v_y)*-1;
+                }
+                if(y>plansza.height-10-r || y<10+r)
+                {
+                    v_y=v_y*-1;
+                }
+                if (x>plansza.width || x<0)
+                {
+
+                    if (x<plansza.width/2)
+                    {
+                        punktyGracz1+=1;
+                        alert("Koniec gry!");
+                    }
+                    else
+                    {
+                        punktyGracz2+=1;
+                        alert("Koniec gry!");
+                    }
+
+                    x=plansza.width/2;
+                    y=plansza.height/2;
+                    v_x=plansza.width/200*t*-1;
+                    v_y=0;
+                    p_y=plansza.height/2-plansza.height/10;
+                    p_y2=plansza.height/2-plansza.height/10;
+                    player1UpPressed = false;
+                    player1DownPressed = false;
+                    player2UpPressed = false;
+                    player2DownPressed = false;
+                    t=t*-1;
+                    v=plansza.width/200;
+
+
+                }
+
+                
+
+                if(player1UpPressed && p_y > 10)
+                {
+                    p_y = p_y - v_p;
+                }
+                if(player1DownPressed && p_y < plansza.height - 10 - plansza.height / 5)
+                {
+                    p_y = p_y + v_p;
+                }
+                if(player2UpPressed && p_y2 > 10)
+                {
+                    p_y2 = p_y2 - v_p;
+                }
+                if(player2DownPressed && p_y2 < plansza.height - 10 - plansza.height / 5)
+                {
+                    p_y2 = p_y2 + v_p;
+                }
+                    document.getElementById("punkty_gracz2").textContent = punktyGracz1;
+                    document.getElementById("punkty_gracz1").textContent = punktyGracz2;
+            }
+
+
+
+            var timer=setInterval(animacja,10)
+        </script>
+    </body>
+
+
+
+</html>
